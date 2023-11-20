@@ -1,0 +1,3 @@
+
+address = "C1:FD:AA:08:58:48"
+MODEL_NBR_UUID = "AM2V210"
