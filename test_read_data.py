@@ -6,8 +6,7 @@ MODEL_NBR_UUID = "None"
 
 async def main():
     print("Connecting to device...")
-    async with BleakClient(address) as client:
-        print("Connecting to device...")
+    async with BleakClient(address, timeout=60) as client:
         print("Connected") if (client.is_connected) else print("No connection")
         # Read a characteristic, etc.
         print(client.services)
