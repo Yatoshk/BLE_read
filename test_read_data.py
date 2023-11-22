@@ -1,15 +1,17 @@
 import asyncio
 from bleak import BleakClient
 
-address = "C1:FD:AA:08:58:48"
-MODEL_NBR_UUID = "AM2V210"
+address = "E4:E1:12:53:DA:81"
+MODEL_NBR_UUID = "None"
 
 async def main():
     print("Connecting to device...")
-    async with BleakClient("C1:FD:AA:08:58:48") as client:
-        print("Connected")
+    async with BleakClient(address) as client:
+        print("Connecting to device...")
+        print("Connected") if (client.is_connected) else print("No connection")
         # Read a characteristic, etc.
-        ...
+        print(client.services)
+        
 
     # Device will disconnect when block exits.
     #async BleakClient.disconnect()
