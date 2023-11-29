@@ -1,18 +1,42 @@
 # подключаем библиотеки
+import asyncio
+from bleak import BleakClient
 import PySimpleGUI as sg
 import random
 # обрабатываем нажатие на кнопку
-maxButton = 35
+
+address = "E4:E1:12:53:E7:93"
+CHARACTERISTIC_UUID = "f0001111-4202-cd8d-eb11-3386a69ec3e6"
+
+maxButton = 36
 maxButtonActive = 10
+
+def get_action(temp):
+    return {
+               temp == 0: 'o',
+         1 <= temp < 20:   'a',
+         20 <= temp < 40:  'b',
+         40 <= temp < 60:  'c',
+         60 <= temp < 80:  'd',
+         80 <= temp < 100: 'e'
+    }[True]
+
+async def start_read():
+    async with BleakClient(address) as client:
+        print(client.is_connected)
+        while (True):
+            value = bytes(await client.read_gatt_char(CHARACTERISTIC_UUID))
+            print(value)
+
+
 def update():
+    #asyncio.run(start_read())
     # получаем новое случайное числа
     listNum = []
-    numbers = ''
-    for i in range(maxButtonActive):
-        listNum.append(random.randint(0,maxButton-1))
-        numbers += str(listNum[i]) + " "
-    # получаем доступ к изображениям
-    text_elem = window['-text-']
+    #numbers = ''
+    for i in range(maxButton):
+        listNum.append(random.randint(0,100-1))
+        #numbers += str(listNum[i]) + " "
     listElem = [window['-1-'], window['-2-'], window['-3-'], window['-4-'],
                 
                 window['-5-'], window['-6-'], window['-7-'], window['-8-'],
@@ -25,19 +49,25 @@ def update():
                 window['-33-'], window['-34-'], window['-35-'], window['-36-']]
                 
     for i in range(maxButton):
-        if(i in listNum):
-            listElem[i].update(filename=f'im/{i+1}A.png')
-        else:
+        code_action = get_action(listNum[i])
+        if(code_action == 'a'):
+            listElem[i].update(filename=f'im/{i+1}a.png')
+        elif(code_action == 'b'):
+            listElem[i].update(filename=f'im/{i+1}b.png')
+        elif(code_action == 'c'):
+            listElem[i].update(filename=f'im/{i+1}c.png')
+        elif(code_action == 'd'):
+            listElem[i].update(filename=f'im/{i+1}d.png')
+        elif(code_action == 'e'):
+            listElem[i].update(filename=f'im/{i+1}e.png')
+        elif(code_action == 'o'):
             listElem[i].update(filename=f'im/{i+1}.png')
-    # выводим в него текст с новыми числомами
-    text_elem.update("Результат: {}".format(numbers))
 
+    
 
 # что будет внутри окна
 # первым описываем кнопку и сразу указываем размер шрифта
-layout = [[sg.Button('Новое числа',enable_events=True, key='-GET_RANDOM_NUMBERS-', font='Helvetica 8'),
-        # затем делаем текст
-        sg.Text('Результат:',justification='left', size=(25, 1), key='-text-', font='Helvetica 8')],
+layout = [[sg.Button('Новое числа',enable_events=True, key='-GET_RANDOM_NUMBERS-', font='Helvetica 8')],
         [sg.Image(filename="im/1.png", key='-1-'), sg.Image(filename="im/2.png", key='-2-'),
          sg.Image(filename="im/3.png", key='-3-'), sg.Image(filename="im/4.png", key='-4-'),
          sg.Image(filename="im/1sl.png", key='-1sl-'),
