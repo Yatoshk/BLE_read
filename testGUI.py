@@ -1,13 +1,11 @@
 # подключаем библиотеки
-import asyncio
-from bleak import BleakClient
 import PySimpleGUI as sg
 import random
+import time
 # обрабатываем нажатие на кнопку
-
 address = "E4:E1:12:53:E7:93"
 CHARACTERISTIC_UUID = "f0001111-4202-cd8d-eb11-3386a69ec3e6"
-
+flagStart = True
 maxButton = 36
 maxButtonActive = 10
 
@@ -21,22 +19,11 @@ def get_action(temp):
          80 <= temp < 100: 'e'
     }[True]
 
-async def start_read():
-    async with BleakClient(address) as client:
-        print(client.is_connected)
-        while (True):
-            value = bytes(await client.read_gatt_char(CHARACTERISTIC_UUID))
-            print(value)
-
-
 def update():
-    #asyncio.run(start_read())
     # получаем новое случайное числа
     listNum = []
-    #numbers = ''
     for i in range(maxButton):
         listNum.append(random.randint(0,100-1))
-        #numbers += str(listNum[i]) + " "
     listElem = [window['-1-'], window['-2-'], window['-3-'], window['-4-'],
                 
                 window['-5-'], window['-6-'], window['-7-'], window['-8-'],
@@ -62,12 +49,14 @@ def update():
             listElem[i].update(filename=f'im/{i+1}e.png')
         elif(code_action == 'o'):
             listElem[i].update(filename=f'im/{i+1}.png')
+        
 
     
 
 # что будет внутри окна
 # первым описываем кнопку и сразу указываем размер шрифта
-layout = [[sg.Button('Новое числа',enable_events=True, key='-GET_RANDOM_NUMBERS-', font='Helvetica 8')],
+layout = [[sg.Button('Start to get Data',enable_events=True, key='-GET_RANDOM_NUMBERS-', font='Helvetica 8'),
+           sg.Button('Stop getting Data',enable_events=True, key='-STOP_RANDOM_NUMBERS-', font='Helvetica 8')],
         [sg.Image(filename="im/1.png", key='-1-'), sg.Image(filename="im/2.png", key='-2-'),
          sg.Image(filename="im/3.png", key='-3-'), sg.Image(filename="im/4.png", key='-4-'),
          sg.Image(filename="im/1sl.png", key='-1sl-'),
@@ -113,8 +102,11 @@ while True:
         break
     # если нажали на кнопку
     if event == '-GET_RANDOM_NUMBERS-':
-        # запускаем связанную функцию
+        # запускаем связанную функцию        
         update()
+    #if event == '-STOP_RANDOM_NUMBERS-':
+        # запускаем связанную функцию
+        
 
 # закрываем окно и освобождаем используемые ресурсы
 window.close()
